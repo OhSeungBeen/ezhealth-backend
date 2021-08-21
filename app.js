@@ -6,6 +6,8 @@ const path = require('path');
 const session = require('express-session');
 
 const mongoConnect = require('./models');
+const api = require('./api');
+const jwtMiddleware = require('./lib/jwtMiddleware');
 
 const app = express();
 mongoConnect();
@@ -21,9 +23,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(jwtMiddleware);
 
 // server start
 app.set('port', process.env.PORT);
 app.listen(app.get('port'), () => {
   console.log(`listen port ${app.get('port')}..`);
 });
+
+// router
+app.use('/api', api);
